@@ -11,8 +11,6 @@ export default function Home() {
     loadBooksFromLocalStorage()
   }, [loadBooksFromLocalStorage]);
 
-
-
   return (
     <div className="container mx-auto">
       <BookSearch />
