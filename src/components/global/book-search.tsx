@@ -12,24 +12,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useStore } from "../../lib/store";
 
 export type Book = {
   key: string;
   title: string;
   author_name: string[];
-  first_publish_year: number;
+  first_publish_year: string;
   number_of_pages: number;
   number_of_pages_median: string | null;
   status: `done` | `inProgress` | `backlog`;
 };
 
-export const BookSearch = ({
-  onAddBook,
-}: {
-  onAddBook: (book: Book) => void;
-}) => {
+export const BookSearch = () => {
+
+  const {books, addBook} = useStore((state)=>state)
   const [query, setQuery] = useState("");
-  const [books, setBooks] = useState<any[]>([]);
+  const [results, setResults] = useState<Book[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [totalBooks, setTotalBooks] = useState(0);
@@ -52,7 +51,7 @@ export const BookSearch = ({
       const response = await axios.get<SearchResult>(
         `https://openlibrary.org/search.json?q=${query}&page=${page}&limit=${booksPerPage}`
       );
-      setBooks(response.data.docs);
+      setResults(response.data.docs);
       setTotalBooks(response.data.numFound);
       setCurrentPage(page);
     } catch (error) {
@@ -121,18 +120,18 @@ export const BookSearch = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {books.map((book, index) => (
+              {results.map((book, index) => (
                 <TableRow key={index}>
                   <TableCell>{book.title}</TableCell>
                   <TableCell>{book.author_name?.join(", ")}</TableCell>
                   <TableCell>{book.first_publish_year}</TableCell>
                   <TableCell>
-                    {book.number_of_pages_median || book.number_of_pages}
+                    {book.number_of_pages_median}
                   </TableCell>
                   <TableCell>
                     <Button
                       variant="link"
-                      onClick={() => onAddBook({
+                      onClick={() => addBook({
                         key: book.key,
                         title: book.title,
                         author_name: book.author_name,

@@ -9,19 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Book } from "./book-search";
 import { Button } from "../ui/button";
+import { useStore } from "@/lib/store";
 
-export const BookList = ({
-  books,
-  onMoveBook,
-  onRemoveBook,
-}: {
-  books: Book[];
-  onMoveBook: (book: Book, targetList: Book["status"]) => void;
-  onRemoveBook: (book: Book) => void;
-}) => {
-  const moveToList = (book: Book, targetList: Book["status"]) => {
-    onMoveBook(book, targetList);
-  };
+export const BookList = () => {
+  const { books, moveBook, removeBook } = useStore((state) => state);
+  const moveToList = (book: Book, targetList: Book['status']) => {
+    moveBook(book, targetList)
+  }
 
   const renderBookItem = (book: Book, index: number) => {
     return (
@@ -38,10 +32,6 @@ export const BookList = ({
             <p>
               <span className={`font-bold`}>First Publish Year:</span>{" "}
               {book.first_publish_year}
-            </p>
-            <p>
-              <span className={`font-bold`}>Number of Pages:</span>{" "}
-              {book.number_of_pages}
             </p>
             <p>
               <span className={`font-bold`}>Number of Pages (Median):</span>{" "}
@@ -67,7 +57,7 @@ export const BookList = ({
           </Button>
         </CardFooter>
         <CardFooter>
-          <Button variant="destructive" onClick={() => onRemoveBook(book)}>
+          <Button variant="destructive" onClick={() => removeBook(book)}>
             Remove Book
           </Button>
         </CardFooter>
