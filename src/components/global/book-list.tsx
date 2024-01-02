@@ -10,7 +10,7 @@ import {
 import { Book } from "./book-search";
 import { Button } from "../ui/button";
 import { useStore } from "@/lib/store";
-import { DragDropContext, Draggable, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, Draggable, DropResult } from "@hello-pangea/dnd"
 import { StrictModeDroppable } from "./strict-mode-droppable";
 
 export const BookList = () => {
@@ -21,7 +21,11 @@ export const BookList = () => {
     moveBook(book, targetList);
   };
 
-  const renderBookItem = (book: Book, index: number) => {
+  const renderBookItem = (
+    book: Book,
+    index: number,
+    sourceList: string
+  ) => {
     return (
       <Card key={index} className={`mb-4`}>
         <CardHeader>
@@ -47,7 +51,11 @@ export const BookList = () => {
           </CardDescription>
         </CardContent>
         <CardFooter className={`gap-4`}>
-          <Button variant="default" onClick={() => moveToList(book, "backlog")}>
+          <Button 
+            variant="default" 
+            onClick={() => moveToList(book, "backlog")}
+            disabled={sourceList === "backlog"}
+        >
             Backlog
           </Button>
           <Button
@@ -92,11 +100,12 @@ export const BookList = () => {
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}
                   >
-                    {renderBookItem(book, index)}
+                    {renderBookItem(book, index, sourceList)}
                   </div>
                 )}
               </Draggable>
             ))}
+            {provided.placeholder}
           </div>
         )}
       </StrictModeDroppable>
