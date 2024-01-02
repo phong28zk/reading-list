@@ -19,11 +19,15 @@ export type Book = {
   author_name: string[];
   first_publish_year: number;
   number_of_pages: number;
-  number_of_pages_median: number;
+  number_of_pages_median: string | null;
   status: `done` | `inProgress` | `backlog`;
 };
 
-export const BookSearch = () => {
+export const BookSearch = ({
+  onAddBook,
+}: {
+  onAddBook: (book: Book) => void;
+}) => {
   const [query, setQuery] = useState("");
   const [books, setBooks] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +37,7 @@ export const BookSearch = () => {
 
   const booksPerPage = 100;
   const startIndex = (currentPage - 1) * booksPerPage + 1;
-  const endIndex = Math.min(startIndex+booksPerPage-1, totalBooks);
+  const endIndex = Math.min(startIndex + booksPerPage - 1, totalBooks);
 
   type SearchResult = {
     docs: Book[];
@@ -92,11 +96,11 @@ export const BookSearch = () => {
           </Button>
         </div>
         <div className="mt-2">
-            {totalBooks > 0 && (
-                <span className={`text-sm`}>
-                    Showing {startIndex} - {endIndex} of {totalBooks} results
-                </span>
-            )}
+          {totalBooks > 0 && (
+            <span className={`text-sm`}>
+              Showing {startIndex} - {endIndex} of {totalBooks} results
+            </span>
+          )}
         </div>
         <div className={`mt-4 max-h-64 overflow-auto`}>
           <Table className={`mx-10`}>
@@ -113,6 +117,7 @@ export const BookSearch = () => {
                 </TableHead>
                 <TableHead className={`w-[150px]`}>Year</TableHead>
                 <TableHead className={`w-[150px]`}>Page Count</TableHead>
+                <TableHead className={`w-[150px] justify-center`}>Add</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -124,13 +129,29 @@ export const BookSearch = () => {
                   <TableCell>
                     {book.number_of_pages_median || book.number_of_pages}
                   </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="link"
+                      onClick={() => onAddBook({
+                        key: book.key,
+                        title: book.title,
+                        author_name: book.author_name,
+                        first_publish_year: book.first_publish_year,
+                        number_of_pages: book.number_of_pages,
+                        number_of_pages_median: book.number_of_pages_median,
+                        status: `backlog`
+                      })}
+                    >
+                      Add
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
       </div>
-      <div className={`mt-4 flex items-center justify-between`}>
+      <div className={`p-4 mt-4 flex items-center justify-between`}>
         <Button
           variant="outline"
           disabled={currentPage <= 1 || isLoading}
